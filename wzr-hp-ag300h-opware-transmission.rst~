@@ -197,7 +197,6 @@ setup startup script
 append following to current startup script::
 
         if [ -f /mnt/sda_part1/optware.enable ]; then 
-        sleep 2 
         export TRANSMISSION_WEB_HOME='/opt/usr/share/transmission/web/'
         /opt/usr/bin/transmission-daemon -g /tmp/mnt/root/.config/transmission-daemon
         fi  
