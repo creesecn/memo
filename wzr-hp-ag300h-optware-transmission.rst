@@ -203,6 +203,10 @@ append following to current startup script::
 
 setup dynamic dns and external web-gui access
 -----------------------------------------------
-TBD
+save following command in firewall script(Administration -> Commands)::
+
+    /usr/sbin/iptables -I INPUT 1 -p tcp --dport your-transmission-port -j ACCEPT
+
+create a new domain at any dynamic dns service(ex. freedns.afraid.org) and config the DDNS service in DDWRT webui
 
 
