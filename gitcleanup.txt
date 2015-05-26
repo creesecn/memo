@@ -1,3 +1,7 @@
+git rm first
+==========================
+git rm -rf path/to/cleanup/file
+
 Cleaning the files
 ===========================
 Cleaning the file will take a while, depending on how busy your repository has been. You just need one command to begin the process:
