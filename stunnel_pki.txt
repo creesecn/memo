@@ -1,0 +1,35 @@
+Personally, I prefer to generate a key on the client side and a key on the server side:
+
+(on the server)
+openssl genrsa -out server.key 2048
+openssl req -new -x509 -nodes -days 365 -key server.key -out server.crt
+
+(on the client)
+openssl genrsa -out client.key 2048
+openssl req -new -x509 -nodes -days 365 -key client.key -out client.crt
+
+From there I copy the public cert from the client to the server and vice versa. Then I set verify = 3, which causes both the client and server to validate against one another.
+
+Example Server config:
+
+client = no
+pid = /var/run/stunnel.pid
+[squid]
+accept = 8888
+connect = 127.0.0.1:3128
+cert = /etc/stunnel/server.crt
+key = /etc/stunnel/server.key
+CAfile = /etc/stunnel/client.crt
+verify = 3
+
+Example Client config:
+
+client = yes
+pid = /var/run/stunnel.pid
+[squid]
+accept = 127.0.0.1:8080
+connect = [server ip]:8888
+cert = /etc/stunnel/client.crt
+key = /etc/stunnel/client.key
+CAfile = /etc/stunnel/server.crt
+verify = 3
