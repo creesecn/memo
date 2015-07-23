@@ -1,0 +1,139 @@
+qemu-img create -f qcow2 /vm/centos7-desktop.qcow2 20G
+virt-install --virt-type kvm --name centos7-desktop --ram 4096 --vcpus=2 \
+--cdrom=/vm/CentOS-7.0-1406-x86_64-Minimal.iso \
+--disk path=/vm/centos7-desktop.qcow2,size=20,format=qcow2,cache=none,bus=virtio \
+--network network=default,model=virtio \
+--video qxl --channel spicevmc \
+--graphics spice,listen=0.0.0.0 --noautoconsole \
+--os-type=linux --os-variant=rhel7
+
+
+--location=http://mirrors.tuna.tsinghua.edu.cn/opensuse/distribution/13.2/repo/oss/
+
+fedora
+===============
+qemu-img create -f qcow2 /vm/fedora21.qcow2 20G
+virt-install --virt-type kvm --name fedora21 --ram 4096 --vcpus=2 \
+--cdrom=/vm/Fedora-Live-Workstation-x86_64-21-5.iso \
+--disk path=/vm/fedora21.qcow2,size=20,format=qcow2,cache=none,bus=virtio \
+--network network=default,model=virtio \
+--video qxl --channel spicevmc \
+--graphics spice,listen=0.0.0.0 --noautoconsole \
+--os-type=linux --os-variant=fedora18
+
+winxp
+===============
+qemu-img create -f qcow2 /vm/winxp.qcow2 20G
+virt-install --virt-type kvm --name winxp --ram 1024 --vcpus=1 \
+--cdrom=/vm/zh-hans_windows_xp_professional_with_service_pack_3_x86_cd_vl_x14-74070.iso \
+--disk path=/vm/winxp.qcow2,size=20,format=qcow2,cache=none,bus=virtio \
+--disk path=/vm/virtio-win-1.1.16.vfd,device=floppy \
+--disk path=/vm/virtio-win-0.1-94.iso,device=cdrom --force \
+--network network=default,model=virtio \
+--video qxl --channel spicevmc \
+--graphics spice,listen=0.0.0.0 --noautoconsole \
+--os-type=windows --os-variant=winxp
+
+
+win7
+===================
+qemu-img create -f qcow2 /vm/win7sp1x86.qcow2 40G
+virt-install --virt-type kvm --name win7sp1x86 --ram 2048 --vcpus=2 \
+--cdrom=/vm/cn_windows_7_professional_with_sp1_x86_dvd_u_677162.iso \
+--disk path=/vm/win7sp1x86.qcow2,size=40,format=qcow2,cache=none,bus=virtio \
+--disk path=/vm/virtio-win-0.1-94.iso,device=cdrom --force \
+--network network=default,model=virtio \
+--video qxl --channel spicevmc \
+--graphics spice,listen=0.0.0.0 --noautoconsole \
+--os-type=windows --os-variant=win7
+
+import 
+--------------
+virt-install --virt-type kvm --name win7-x86-base --ram 2048 --vcpus=2 \
+--disk path=/vm/win7sp1x86-base.qcow2,size=40,format=qcow2,cache=none,bus=virtio \
+--network network=default,model=virtio \
+--video qxl --channel spicevmc \
+--graphics spice,listen=0.0.0.0 --noautoconsole \
+--os-type=windows --os-variant=win7 --import
+
+
+
+import existed opensuse
+==========================
+virt-install --virt-type kvm --name opensuse13 --ram 4096 --vcpus=2 \
+--disk path=/vm/opensuse13-desktop.qcow2,format=qcow2,size=40,cache=none,bus=virtio \
+--network network=default,model=virtio \
+--video qxl --channel spicevmc \
+--graphics spice,listen=0.0.0.0 --noautoconsole \
+--os-type=linux --os-variant=opensuse12 --import
+
+
+
+virt-install \
+   --name=guest1-rhel6-64 \
+   --controller type=scsi,model=virtio-scsi \
+   --disk path=/var/lib/libvirt/images/guest1-rhel6-64.dsk,size=8,sparse=false,cache=none,bus=scsi \
+   --graphics spice \
+   --vcpus=2 --ram=2048 \
+   --location=http://example1.com/installation_tree/RHEL6.4-Server-x86_64/os \
+   --network bridge=br0 \
+   --os-type=linux \
+   --os-variant=rhel6
+
+
+
+Windows Server 2008 R2 KVM Guest VM install example
+
+# Place WinServ ISO into /storage/local/iso/
+# Download VIRTIO driver iso image to use during install
+cd /storage/local/iso/
+wget http://alt.fedoraproject.org/pub/alt/virtio-win/latest/images/bin/virtio-win-0.1-52.iso
+
+# Pre-create VM disk image
+qemu-img create -f qcow2 -o preallocation=metadata /storage/local/images/winserv1.qcow2 50G
+
+# Launch installation inside screen
+screen
+virt-install --connect qemu:///system --name WinServ1 --ram 2048 --vcpus 2 \
+--disk path=/storage/local/images/winserv1.qcow2,format=qcow2,bus=virtio,cache=none \
+--disk path=/storage/local/iso/virtio-win-0.1-52.iso,device=cdrom \
+--cdrom /storage/local/iso/winserv.iso \
+--network=bridge:vmbr0,model=e1000 \
+--vnc --os-type=windows --os-variant=win2k8 \
+--noautoconsole --accelerate --noapic --keymap=en-us
+# Detach screen
+CTRL+A+D
+
+# Run virt-manager for VNC display (make sure you have X forwarding enabled on your ssh session for remote display)
+virt-manager
+# OR
+virt-viewer -c qemu:///system WinServ1
+RHEL6 (CentOS6) KVM Guest VM install example
+
+# Pre-create VM disk image
+qemu-img create -f qcow2 -o preallocation=metadata /storage/local/images/centos6vm.qcow2 10G
+
+# Launch installation inside screen
+screen
+virt-install --connect qemu:///system \
+--name centos6vm --ram 1024 --vcpus 1 \
+--disk path=/storage/local/images/centos6vm.qcow2,format=qcow2,bus=virtio,cache=none \
+--network=bridge:vmbr0,model=virtio --vnc --os-type=linux --os-variant=rhel6 \
+--cdrom /storage/local/iso/centos63-x86_64.iso --accelerate --noautoconsole --keymap=en-us
+# Detach screen
+CTRL+A+D
+
+# Run virt-manager for VNC display (make sure you have X forwarding enabled on your ssh session for remote display)
+virt-manager
+# OR
+virt-viewer -c qemu:///system centos6vm
+
+screen resolution
+=================================
+
+cvt 1920 1080 # Get the correct settings for the new mode
+              # Output for me:  "1920x1080_60.00"  173.00  1920 2048 2248 2576  1080 1083 1088 1120 -hsync +vsync
+
+xrandr --newmode "1920x1080_60.00"  173.00  1920 2048 2248 2576  1080 1083 1088 1120 -hsync +vsync 
+xrandr --addmode HDMI1 1920x1080_60.00 # Change HDMI1 to whatever output you want to use
+xrandr --output HDMI1 --mode 1920x1080_60.00
