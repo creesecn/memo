@@ -10,6 +10,28 @@ virt-install --virt-type kvm --name centos7-desktop --ram 4096 --vcpus=2 \
 
 --location=http://mirrors.tuna.tsinghua.edu.cn/opensuse/distribution/13.2/repo/oss/
 
+debian8 for docker 
+====================
+qemu-img create -f qcow2 /vm/debian8.qcow2 100G
+virt-install --virt-type kvm --name debian8 --ram 16384 --vcpus=12 \
+--cdrom=/vm/debian-8.1.0-amd64-CD-1.iso \
+--disk path=/vm/debian8.qcow2,size=100,format=qcow2,cache=none,bus=virtio \
+--network network=default,model=virtio \
+--video qxl --channel spicevmc \
+--graphics spice,listen=0.0.0.0 --noautoconsole \
+--os-type=linux --os-variant=debianwheezy
+
+centos7 for docker 
+====================
+qemu-img create -f qcow2 /vm/centos7.qcow2 100G
+virt-install --virt-type kvm --name centos7 --ram 16384 --vcpus=12 \
+--cdrom=/vm/CentOS-7.0-1406-x86_64-Minimal.iso \
+--disk path=/vm/centos7.qcow2,size=100,format=qcow2,cache=none,bus=virtio \
+--network network=default,model=virtio \
+--video qxl --channel spicevmc \
+--graphics spice,listen=0.0.0.0 --noautoconsole \
+--os-type=linux 
+
 fedora
 ===============
 qemu-img create -f qcow2 /vm/fedora21.qcow2 20G
