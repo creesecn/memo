@@ -32,6 +32,7 @@ virt-install --virt-type kvm --name centos7 --ram 16384 --vcpus=12 \
 --graphics spice,listen=0.0.0.0 --noautoconsole \
 --os-type=linux 
 
+
 fedora
 ===============
 qemu-img create -f qcow2 /vm/fedora21.qcow2 20G
@@ -102,6 +103,34 @@ virt-install \
    --os-type=linux \
    --os-variant=rhel6
 
+bridge network
+==================
+virsh iface-bridge eth0 br0
+
+
+conf file change method
+--------------------------
+chkconfig network on
+service network restart
+yum -y erase NetworkManager
+cp -p /etc/sysconfig/network-scripts/ifcfg-{eth0,br0}
+sed -i -e'/HWADDR/d' -e'/UUID/d' -e's/eth0/br0/' -e's/Ethernet/Bridge/' \
+/etc/sysconfig/network-scripts/ifcfg-br0
+echo DELAY=0 >> /etc/sysconfig/network-scripts/ifcfg-br0
+echo 'BOOTPROTO="none"' >> /etc/sysconfig/network-scripts/ifcfg-eth0
+echo BRIDGE=br0 >> /etc/sysconfig/network-scripts/ifcfg-eth0
+service network restart
+brctl show
+brctl stp br0 yes
+
+bridge network import
+========================
+virt-install --virt-type kvm --name centos7 --ram 16384 --vcpus=12 \
+--disk path=/vm/centos7.qcow2,size=100,format=qcow2,cache=none,bus=virtio \
+--network model=virtio,bridge=br0 \
+--video qxl --channel spicevmc \
+--graphics spice,listen=0.0.0.0 --noautoconsole \
+--os-type=linux  --import
 
 
 Windows Server 2008 R2 KVM Guest VM install example
