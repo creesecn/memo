@@ -58,7 +58,19 @@ virt-install --virt-type kvm --name winxp --ram 1024 --vcpus=1 \
 --os-type=windows --os-variant=winxp
 
 
-win7
+win2k8
+===================
+qemu-img create -f qcow2 /vm/win2k8.qcow2 40G
+virt-install --virt-type kvm --name win2k8 --ram 8192 --vcpus=8 \
+--cdrom=/vm/cn_windows_server_2008_r2_with_sp1_x64_dvd_617598.iso \
+--disk path=/vm/win2k8.qcow2,size=40,format=qcow2,cache=none,bus=virtio \
+--disk path=/vm/virtio-win.iso,device=cdrom --force \
+--network network=default,model=virtio \
+--video qxl --channel spicevmc \
+--graphics spice,listen=0.0.0.0 --noautoconsole \
+--os-type=windows --os-variant=win2k8
+
+win27
 ===================
 qemu-img create -f qcow2 /vm/win7sp1x86.qcow2 40G
 virt-install --virt-type kvm --name win7sp1x86 --ram 2048 --vcpus=2 \
